@@ -1,71 +1,56 @@
-import { useState, useEffect } from 'react'
+import React, { useMemo } from 'react'
+import { GenericData } from './generateData'
+import { LazyLoadingList } from './LazyLoadingList'
+import { EnrichedData, useEnrichedData } from './fetchEnrichedData'
+import { SkeletonLoading } from './SkeletonLoading'
+import { VirtualizedList } from './VirtualizedList'
 
-const ChallengingApp = () => {
-  const generateData = () => {
-    const data = []
-    for (let i = 0; i < 10000; i++) {
-      data.push({
-        id: i,
-        name: `Item ${i}`,
-        value: Math.random() * 100,
-      })
-    }
-    return data
-  }
+const handleItemClick = (itemId: number) => {
+  console.log(`Item ${itemId} clicked.`)
+}
 
-  const handleItemClick = (itemId: number) => {
-    console.log(`Item ${itemId} clicked.`)
-  }
+const Row: React.FC<EnrichedData> = (item) => {
+  return (
+    <li key={item.id}>
+      <span>{item.name}</span>: <span>{item.value}</span>
+      <button onClick={() => handleItemClick(item.id)}>Click me</button>
+    </li>
+  )
+}
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const calculateSum = (data: any[]) => {
-    console.log('Calculating sum...')
-    let sum = 0
-    data.forEach((item: { value: number }) => {
-      sum += item.value
-    })
-    return sum
-  }
+const calculateSum = (data: GenericData[]): number => {
+  console.log('Calculating sum...')
+  return data.reduce((prevValue, currValue) => prevValue + currValue.value, 0)
+}
 
-  const [data, setData] = useState(generateData())
-
-  useEffect(() => {
-    setData(generateData())
-  }, [])
-
-  const fetchEnrichedData = async () => {
-    try {
-      const response = await fetch('https://example.com/api/data')
-      const apiData = await response.json()
-
-      const enrichedData = data.map((item, index) => ({
-        ...item,
-        additionalInfo: apiData[index].additionalInfo,
-      }))
-
-      setData(enrichedData)
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    }
-  }
-
-  useEffect(() => {
-    fetchEnrichedData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
+const ChallengingApp: React.FC = () => {
+  const fetchData = useEnrichedData()
+  const sumTotal = useMemo(
+    () => (fetchData.status === 'SUCCESS' ? calculateSum(fetchData.data) : 0),
+    [fetchData],
+  )
   return (
     <div>
       <h1>Challenging Data Visualization Dashboard</h1>
-      <ul>
-        {data.map((item) => (
-          <li key={item.id}>
-            <span>{item.name}</span>: <span>{item.value}</span>
-            <button onClick={() => handleItemClick(item.id)}>Click me</button>
-          </li>
-        ))}
-      </ul>
-      <div>Total Sum: {calculateSum(data)}</div>
+      {fetchData.status === 'PENDING' && <SkeletonLoading />}
+      {fetchData.status === 'ERROR' && <div>Some error happened</div>}
+      {fetchData.status === 'SUCCESS' && (
+        <>
+          <div>Total Sum: {sumTotal}</div>
+          <LazyLoadingList
+            items={fetchData.data.map((item, index) => (
+              <Row key={`row-element-lazy-loading-list-${index}`} {...item} />
+            ))}
+          />
+          <VirtualizedList
+            containerHeight={500}
+            itemsCount={10}
+            items={fetchData.data.map((item, index) => (
+              <Row key={`row-element-virtualized-list-${index}`} {...item} />
+            ))}
+          />
+        </>
+      )}
     </div>
   )
 }

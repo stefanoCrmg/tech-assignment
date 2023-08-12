@@ -67,3 +67,33 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.loading-background {
+  background: linear-gradient(271deg, #0380ab, #e7e7e7);
+  background-size: 400% 400%;
+  animation: AnimationName 3s ease infinite;
+}
+
+.loading-text-block {
+  height: 1rem;
+}
+
+.loading-element {
+  height: 400px;
+}
+
+@-webkit-keyframes AnimationName {
+  0%{background-position:0% 55%}
+  50%{background-position:100% 46%}
+  100%{background-position:0% 55%}
+}
+@-moz-keyframes AnimationName {
+  0%{background-position:0% 55%}
+  50%{background-position:100% 46%}
+  100%{background-position:0% 55%}
+}
+@keyframes AnimationName {
+  0%{background-position:0% 55%}
+  50%{background-position:100% 46%}
+  100%{background-position:0% 55%}
+}

@@ -41,6 +41,6 @@
     "baseUrl": ".",
     "types": ["vitest/globals"]
   },
-  "include": ["src"],
+  "include": ["src", "src/generateData.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
