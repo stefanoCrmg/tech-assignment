@@ -1,5 +1,19 @@
-import { fireEvent, getByRole, render, screen } from './tests/utils.ts'
+import { fireEvent, getByRole, render, screen, waitFor } from './tests/utils.ts'
 import { ChallengingApp } from './ChallengingApp.tsx'
+
+const IntersectionObserverMock = vi.fn(() => ({
+  disconnect: vi.fn(),
+  observe: vi.fn(),
+  takeRecords: vi.fn(),
+  unobserve: vi.fn(),
+}))
+
+vi.stubGlobal('IntersectionObserver', IntersectionObserverMock)
+
+afterAll(() => {
+  vi.clearAllMocks()
+  vi.unstubAllGlobals()
+})
 
 describe('App', () => {
   it('renders headline', () => {
@@ -9,17 +23,17 @@ describe('App', () => {
     ).toBeVisible()
   })
 
-  it('renders an an element with the calculated sum of all the rows', () => {
+  it('renders an an element with the calculated sum of all the rows', async () => {
     render(<ChallengingApp />)
-    const totalSumElement = screen.getByText(/Total Sum: /)
+    const totalSumElement = await waitFor(() => screen.getByText(/Total Sum: /))
     expect(totalSumElement).toBeVisible()
   })
 
-  it('renders a list with clickable elements', () => {
+  it('renders a list with clickable elements', async () => {
     const consoleMock = vi.spyOn(console, 'log')
 
     render(<ChallengingApp />)
-    const totalSumElement = screen.getAllByRole('listitem')
+    const totalSumElement = await waitFor(() => screen.getAllByRole('listitem'))
     const firstListItem = totalSumElement[0]
     if (firstListItem) {
       const buttonEl = getByRole(firstListItem, 'button', { name: 'Click me' })
