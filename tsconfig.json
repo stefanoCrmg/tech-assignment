@@ -39,6 +39,7 @@
     "esModuleInterop": true,
     "incremental": true,
     "baseUrl": ".",
+    "types": ["vitest/globals"]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

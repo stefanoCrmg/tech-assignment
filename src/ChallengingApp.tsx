@@ -13,6 +13,10 @@ const ChallengingApp = () => {
     return data
   }
 
+  const handleItemClick = (itemId: number) => {
+    console.log(`Item ${itemId} clicked.`)
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const calculateSum = (data: any[]) => {
     console.log('Calculating sum...')
@@ -28,10 +32,6 @@ const ChallengingApp = () => {
   useEffect(() => {
     setData(generateData())
   }, [])
-
-  const handleItemClick = (itemId: number) => {
-    console.log(`Item ${itemId} clicked.`)
-  }
 
   const fetchEnrichedData = async () => {
     try {
@@ -70,4 +70,4 @@ const ChallengingApp = () => {
   )
 }
 
-export default ChallengingApp
+export { ChallengingApp }
